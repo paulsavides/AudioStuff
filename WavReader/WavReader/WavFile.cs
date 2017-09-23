@@ -1,9 +1,15 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using System.Collections.Generic;
 
 namespace WavReader
 {
+  /// <summary>
+  /// A class to deal with reading a Wav file.
+  /// 
+  /// Thank you to this page http://soundfile.sapp.org/doc/WaveFormat/ for the information
+  /// </summary>
   public class WavFile : IDisposable
   {
     private readonly FileStream fstream;
@@ -16,7 +22,7 @@ namespace WavReader
 
     public void Dispose()
     {
-      fstream.Close();
+      fstream.Dispose();
     }
 
     private void ReadFileData()
@@ -35,8 +41,9 @@ namespace WavReader
       Subchunk2Id = ReadString();
       Subchunk2Size = ReadInt32();
       NumSamples = Subchunk2Size / NumChannels / (BitsPerSample / 8);
-      Data = ReadBytes(NumSamples);
-      //Other = ReadTheRest();
+      Data = ReadBytes(Subchunk2Size);
+      //Channels = ReadChannels();
+
     }
 
     public override string ToString()
@@ -57,12 +64,7 @@ namespace WavReader
        + "Subchunk2Size : " + Subchunk2Size + Environment.NewLine
        + "NumSamples    : " + NumSamples;// + Environment.NewLine;
 
-
-      //Other.ForEach(val => res += ", " + val);
-
       return res;
-
-
     }
 
     public string ChunkId { get; private set; }
@@ -79,23 +81,39 @@ namespace WavReader
     public string Subchunk2Id { get; private set; }
     public Int32 Subchunk2Size { get; private set; }
     public Int32 NumSamples { get; private set; }
+    public byte[][] Channels { get; private set; }
     public byte[] Data { get; private set; }
-    //public List<string> Other { get; private set; }
 
 
-    //private List<string> ReadTheRest()
-    //{
-    //  var res = new List<string>();
+    public void Play()
+    {
+      for(int i = 0; i < Subchunk2Size;)
+      {
+        for (int c = 0; c < NumChannels; c++)
+        {
+          for (int j = 0; j < BitsPerSample / 8; j++)
+          {
+            // just left channel for a second
+            if (c == 0)
+            {
+              // i = base pos
+              // c = current channel
+              // j = bit per sample
+              Console.WriteLine(Convert.ToString(Data[i + c + j], 2).PadLeft(8, '0'));
+            }
+          }
+        }
 
-    //  byte[] buffer = new byte[4];
-    //  while (fstream.Read(buffer, 0, 4) != 0)
-    //  {
-    //    res.Add(Encoding.UTF8.GetString(buffer));
-    //  }
 
-    //  return res;
-    //}
+        i += (BitsPerSample / 8) * NumChannels;
+      }
+    }
 
+
+
+    /*****************************
+     * FSTREAM READING UTILITIES *
+     *****************************/
     private string ReadString(int bytes = 4)
     {
       return Encoding.UTF8.GetString(ReadBytes(4));
@@ -119,7 +137,5 @@ namespace WavReader
       fstream.Read(buffer, 0, count);
       return buffer;
     }
-
-
   }
 }
