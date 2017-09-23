@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "WavReader": {
+      "commandName": "Project",
+      "commandLineArgs": "> channel.txt"
+    }
+  }
+}

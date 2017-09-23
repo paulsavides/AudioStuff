@@ -16,7 +16,7 @@ namespace WavReader
 
     public WavFile(string filePath)
     {
-      fstream = File.Open(filePath, FileMode.Open);
+      fstream = File.Open(filePath, FileMode.Open, FileAccess.Read);
       ReadFileData();
     }
 
@@ -85,24 +85,50 @@ namespace WavReader
     public byte[] Data { get; private set; }
 
 
-    public void Play()
+    public void PrintChannelSamples(int channel)
     {
-      for(int i = 0; i < Subchunk2Size;)
+      if (channel < 0 || channel > NumChannels - 1)
       {
+        throw new InvalidOperationException($"Cannot read channel [{channel}] there are only [{NumChannels}] channels.");
+      }
+
+      byte[] channelSample = new byte[BitsPerSample / 8];
+      for (int i = 0; i < Subchunk2Size;)
+      {
+
         for (int c = 0; c < NumChannels; c++)
         {
+
           for (int j = 0; j < BitsPerSample / 8; j++)
           {
-            // just left channel for a second
-            if (c == 0)
+            if (c == channel)
             {
               // i = base pos
               // c = current channel
               // j = bit per sample
-              Console.WriteLine(Convert.ToString(Data[i + c + j], 2).PadLeft(8, '0'));
+              channelSample[j] = Data[i + c + j];
+
+
             }
           }
+          // we could put it here to look at both channels 
         }
+
+        // Okay now format it into the correct string
+        string res = null;
+        switch (BitsPerSample)
+        {
+          case 8:
+            res = Convert.ToString(channelSample[0], 2).PadLeft(8, '0');
+            break;
+          case 16:
+            res = Convert.ToString(BitConverter.ToInt16(channelSample, 0), 2).PadLeft(16, '0');
+            break;
+          case 32:
+            res = Convert.ToString(BitConverter.ToInt32(channelSample, 0), 2).PadLeft(32, '0');
+            break;
+        }
+        Console.WriteLine(res);
 
 
         i += (BitsPerSample / 8) * NumChannels;

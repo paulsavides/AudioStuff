@@ -6,15 +6,14 @@ namespace WavReader
   {
     static void Main(string[] args)
     {
-      string filePath = @"D:\Workspace\AudioStuff\WavReader\Wavs\sample.wav";
+      string filePath = @"..\Wavs\testClip.wav";
 
       using (var wav = new WavFile(filePath))
       {
-        //Console.WriteLine(wav);
+        Console.WriteLine(wav);
 
-        wav.Play();
+        wav.PrintChannelSamples(1);
       }
-
 
       Console.ReadKey();
     }
