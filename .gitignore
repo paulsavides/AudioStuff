@@ -2,10 +2,8 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-/AudioProject/.vs/AudioProject/v15
-/AudioProject/AudioProject/Debug
+.vs
 *.user
-/AudioProject/Debug
-/WavReader/.vs/WavReader/v15
-/WavReader/WavReader/bin/Debug/netcoreapp2.0
-/WavReader/WavReader/obj
+Debug
+bin
+obj
