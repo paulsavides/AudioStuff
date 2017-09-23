@@ -6,7 +6,7 @@ namespace WavReader
   {
     static void Main(string[] args)
     {
-      string filePath = @"D:\Workspace\audio\WavReader\Wavs\sample.wav";
+      string filePath = @"..\Wavs\sample.wav";
 
       using (var wav = new WavFile(filePath))
       {

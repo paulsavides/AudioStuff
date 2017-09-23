@@ -4,7 +4,7 @@
 #include "sdl/sdlaudiodevice.hpp"
 #include "sdl/sdlaudiocontext.hpp"
 
-#define FILE_PATH "D:\\Workspace\\audio\\AudioProject\\res\\audio\\testClip.wav\0"
+#define FILE_PATH ".\\res\\audio\\testClip.wav"
 #undef main // SDL defines its own main and i don't want it
 
 
