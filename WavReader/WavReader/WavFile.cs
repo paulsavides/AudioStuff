@@ -13,23 +13,26 @@ namespace WavReader
   public class WavFile : IDisposable
   {
     private readonly FileStream _fstream;
-    private readonly string _filePath;
 
     public WavFile(string filePath)
     {
-      _filePath = filePath;
-      _fstream = File.Open(_filePath, FileMode.Open, FileAccess.Read);
+      _fstream = File.Open(filePath, FileMode.Open, FileAccess.Read);
       ReadFileData();
     }
+
+    /// <summary>
+    /// Used if you want to make your own sounds
+    /// </summary>
+    public WavFile() {}
 
     public void Dispose()
     {
       _fstream.Dispose();
     }
 
-    public void SaveFile()
+    public void SaveFile(string filePath)
     {
-      var fstream = File.Open(_filePath.Replace(".wav", "new.wav"), FileMode.CreateNew, FileAccess.Write);
+      var fstream = File.Open(filePath, FileMode.CreateNew, FileAccess.Write);
       fstream.Write(Encoding.Default.GetBytes(ChunkId), 0, 4);
       fstream.Write(BitConverter.GetBytes(ChunkSize), 0, 4);
       fstream.Write(Encoding.Default.GetBytes(Format), 0, 4);
@@ -56,8 +59,6 @@ namespace WavReader
       }
 
       fstream.Dispose();
-
-
     }
 
     /// <summary>
@@ -102,6 +103,42 @@ namespace WavReader
        + "NumSamples    : " + NumSamples;
 
       return res;
+    }
+
+    public void MakeSquareWave(double volume, int bitsPerSample, int lengthInSeconds, int sampleRate)
+    {
+      ChunkId = "RIFF";
+      //      ChunkSize = sample
+      Format = "WAVE";
+      Subchunk1Id = "fmt "; // space at the end or everything will crash b/c
+                            // "fmt" is just three bytes but
+                            // "fmt " is four
+      Subchunk1Size = 16;
+      AudioFormat = 1; // PCB
+      NumChannels = 1;
+      SampleRate = sampleRate;
+      BitsPerSample = (Int16) bitsPerSample;
+
+      ByteRate = SampleRate * NumChannels * (BitsPerSample / 8);
+      BlockAlign = (Int16) (NumChannels * (BitsPerSample / 8));
+
+      Subchunk2Id = "data";
+      Subchunk2Size = (lengthInSeconds * sampleRate) * BlockAlign;
+
+      NumSamples = Subchunk2Size / NumChannels / (BitsPerSample / 8);
+
+      ChunkSize = 36 /*HEADER SIZE*/ + Subchunk2Size;
+
+      Data = new byte[NumChannels, NumSamples, BitsPerSample / 8];
+
+      int freq = sampleRate / 60;
+
+      for (int i = 0; i < NumSamples; i++)
+      {
+        var bytes = BitConverter.GetBytes((Int16)(Math.Sin((i / (double)30.0)) > 0 ? 1 : -1 * (double)(Int16.MaxValue * volume)));
+        Data[0, i, 0] = bytes[0];
+        Data[0, i, 1] = bytes[1];
+      }
     }
 
     public string ChunkId { get; private set; } // RIFF Header
