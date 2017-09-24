@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.12
+VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WavReader", "WavReader\WavReader.csproj", "{7DB1882A-340F-48D6-B43B-EBDD3CB18F12}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WavReader", "WavReader\WavReader.csproj", "{7DB1882A-340F-48D6-B43B-EBDD3CB18F12}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Wavs", "Wavs", "{A4EB1AE0-055D-4F2B-BD21-49C27E9DA038}"
 	ProjectSection(SolutionItems) = preProject

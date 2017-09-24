@@ -10,7 +10,7 @@ namespace WavReader
 
       using (var wav = new WavFile(filePath))
       {
-        Console.WriteLine(wav);
+        wav.SaveFile();
       }
 
       Console.ReadKey();

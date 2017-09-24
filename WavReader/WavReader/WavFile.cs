@@ -12,17 +12,52 @@ namespace WavReader
   /// </summary>
   public class WavFile : IDisposable
   {
-    private readonly FileStream fstream;
+    private readonly FileStream _fstream;
+    private readonly string _filePath;
 
     public WavFile(string filePath)
     {
-      fstream = File.Open(filePath, FileMode.Open, FileAccess.Read);
+      _filePath = filePath;
+      _fstream = File.Open(_filePath, FileMode.Open, FileAccess.Read);
       ReadFileData();
     }
 
     public void Dispose()
     {
+      _fstream.Dispose();
+    }
+
+    public void SaveFile()
+    {
+      var fstream = File.Open(_filePath.Replace(".wav", "new.wav"), FileMode.CreateNew, FileAccess.Write);
+      fstream.Write(Encoding.Default.GetBytes(ChunkId), 0, 4);
+      fstream.Write(BitConverter.GetBytes(ChunkSize), 0, 4);
+      fstream.Write(Encoding.Default.GetBytes(Format), 0, 4);
+      fstream.Write(Encoding.Default.GetBytes(Subchunk1Id), 0, 4);
+      fstream.Write(BitConverter.GetBytes(Subchunk1Size), 0, 4);
+      fstream.Write(BitConverter.GetBytes(AudioFormat), 0, 2);
+      fstream.Write(BitConverter.GetBytes(NumChannels), 0, 2);
+      fstream.Write(BitConverter.GetBytes(SampleRate), 0, 4);
+      fstream.Write(BitConverter.GetBytes(ByteRate), 0, 4);
+      fstream.Write(BitConverter.GetBytes(BlockAlign), 0, 2);
+      fstream.Write(BitConverter.GetBytes(BitsPerSample), 0, 2);
+      fstream.Write(Encoding.Default.GetBytes(Subchunk2Id), 0, 4);
+      fstream.Write(BitConverter.GetBytes(Subchunk2Size), 0, 4);
+
+      for (int i = 0; i < NumSamples; i++)
+      {
+        for (int c = 0; c < NumChannels; c++)
+        {
+          for (int j = 0; j < BitsPerSample / 8; j++)
+          {
+            fstream.WriteByte(Data[c, i, j]);
+          }
+        }
+      }
+
       fstream.Dispose();
+
+
     }
 
     /// <summary>
@@ -64,15 +99,16 @@ namespace WavReader
        + "BitsPerSample : " + BitsPerSample + Environment.NewLine
        + "Subchunk2Id   : " + Subchunk2Id + Environment.NewLine
        + "Subchunk2Size : " + Subchunk2Size + Environment.NewLine
-       + "NumSamples    : " + NumSamples;// + Environment.NewLine;
+       + "NumSamples    : " + NumSamples;
 
       return res;
     }
 
-    public string ChunkId { get; private set; }
+    public string ChunkId { get; private set; } // RIFF Header
     public Int32 ChunkSize { get; private set; }
     public string Format { get; private set; }
-    public string Subchunk1Id { get; private set; }
+
+    public string Subchunk1Id { get; private set; } // WAV Header
     public Int32 Subchunk1Size { get; private set; }
     public Int16 AudioFormat { get; private set; }
     public Int16 NumChannels { get; private set; }
@@ -82,7 +118,8 @@ namespace WavReader
     public Int16 BitsPerSample { get; private set; }
     public string Subchunk2Id { get; private set; }
     public Int32 Subchunk2Size { get; private set; }
-    public Int32 NumSamples { get; private set; }
+
+    public Int32 NumSamples { get; private set; } // calculated, not part of header
 
     // Data is a 3D array like...
     // [Channel 1]
@@ -100,7 +137,7 @@ namespace WavReader
     /// The raw audio data, stored as a 3D array of bytes,
     /// Data[ChannelNum, SampleNum, SampleByte]
     /// </summary>
-    private byte[,,] Data { get; set; }
+    private byte[,,] Data { get; set; } // Not exactly as stored in file
 
     private void ReadSamples()
     {
@@ -154,13 +191,13 @@ namespace WavReader
     private byte[] ReadBytes(int count)
     {
       byte[] buffer = new byte[count];
-      fstream.Read(buffer, 0, count);
+      _fstream.Read(buffer, 0, count);
       return buffer;
     }
 
     private void ReadBytes(ref byte[] buffer, int count)
     {
-      fstream.Read(buffer, 0, count);
+      _fstream.Read(buffer, 0, count);
     }
   }
 }
