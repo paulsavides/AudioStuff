@@ -25,6 +25,10 @@ namespace WavReader
       fstream.Dispose();
     }
 
+    /// <summary>
+    /// Should be called immediately in the constructor
+    /// Will read all data from the file stream into our own properties
+    /// </summary>
     private void ReadFileData()
     {
       ChunkId = ReadString();
@@ -41,9 +45,7 @@ namespace WavReader
       Subchunk2Id = ReadString();
       Subchunk2Size = ReadInt32();
       NumSamples = Subchunk2Size / NumChannels / (BitsPerSample / 8);
-      Data = ReadBytes(Subchunk2Size);
-      //Channels = ReadChannels();
-
+      ReadSamples();
     }
 
     public override string ToString()
@@ -81,61 +83,53 @@ namespace WavReader
     public string Subchunk2Id { get; private set; }
     public Int32 Subchunk2Size { get; private set; }
     public Int32 NumSamples { get; private set; }
-    public byte[][] Channels { get; private set; }
-    public byte[] Data { get; private set; }
 
+    // Data is a 3D array like...
+    // [Channel 1]
+    //     [SampleNum]
+    //         [SampleByte]
+    //         [SampleByte]
+    //     [SampleNum]
+    //         [SampleByte]
+    //         etc...
+    // [Channel 2]
+    //     [SampleNum]
+    //        [SampleByte]
+    //        etc...
+    /// <summary>
+    /// The raw audio data, stored as a 3D array of bytes,
+    /// Data[ChannelNum, SampleNum, SampleByte]
+    /// </summary>
+    private byte[,,] Data { get; set; }
 
-    public void PrintChannelSamples(int channel)
+    private void ReadSamples()
     {
-      if (channel < 0 || channel > NumChannels - 1)
-      {
-        throw new InvalidOperationException($"Cannot read channel [{channel}] there are only [{NumChannels}] channels.");
-      }
+      Data = new byte[NumChannels, NumSamples, BitsPerSample / 8];
 
-      byte[] channelSample = new byte[BitsPerSample / 8];
-      for (int i = 0; i < Subchunk2Size;)
-      {
+      // Wav file stores samples in sequence
+      // imagine 16 bit samples with two channels
+      //        10010100 01001000 00000010 00010000 10100100 00100100 00100000 11000100
+      //        [ chan 1 sample ] [ chan 2 sample ] [ chan 1        ] [ chan 2        ]
+      // So we want to read in four bytes for each sample we're processing
+      int bytesPerSample = (BitsPerSample / 8) * NumChannels;
+      byte[] buffer = new byte[bytesPerSample];
 
+      for (int i = 0; i < NumSamples; i++)
+      {
+        ReadBytes(ref buffer, bytesPerSample);
         for (int c = 0; c < NumChannels; c++)
         {
 
           for (int j = 0; j < BitsPerSample / 8; j++)
           {
-            if (c == channel)
-            {
-              // i = base pos
-              // c = current channel
-              // j = bit per sample
-              channelSample[j] = Data[i + c + j];
-
-
-            }
+            // i = current sample
+            // c = current channel
+            // j = bit per sample
+            Data[c, i, j] = buffer[(c * (BitsPerSample / 8)) + j];
           }
-          // we could put it here to look at both channels 
         }
-
-        // Okay now format it into the correct string
-        string res = null;
-        switch (BitsPerSample)
-        {
-          case 8:
-            res = Convert.ToString(channelSample[0], 2).PadLeft(8, '0');
-            break;
-          case 16:
-            res = Convert.ToString(BitConverter.ToInt16(channelSample, 0), 2).PadLeft(16, '0');
-            break;
-          case 32:
-            res = Convert.ToString(BitConverter.ToInt32(channelSample, 0), 2).PadLeft(32, '0');
-            break;
-        }
-        Console.WriteLine(res);
-
-
-        i += (BitsPerSample / 8) * NumChannels;
       }
     }
-
-
 
     /*****************************
      * FSTREAM READING UTILITIES *
@@ -162,6 +156,11 @@ namespace WavReader
       byte[] buffer = new byte[count];
       fstream.Read(buffer, 0, count);
       return buffer;
+    }
+
+    private void ReadBytes(ref byte[] buffer, int count)
+    {
+      fstream.Read(buffer, 0, count);
     }
   }
 }
