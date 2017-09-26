@@ -108,7 +108,6 @@ namespace WavReader
     public void MakeSquareWave(double volume, int bitsPerSample, int lengthInSeconds, int sampleRate)
     {
       ChunkId = "RIFF";
-      //      ChunkSize = sample
       Format = "WAVE";
       Subchunk1Id = "fmt "; // space at the end or everything will crash b/c
                             // "fmt" is just three bytes but
@@ -131,14 +130,71 @@ namespace WavReader
 
       Data = new byte[NumChannels, NumSamples, BitsPerSample / 8];
 
-      int freq = sampleRate / 60;
+      int second = 0;
 
       for (int i = 0; i < NumSamples; i++)
       {
-        var bytes = BitConverter.GetBytes((Int16)(Math.Sin((i / (double)30.0)) > 0 ? 1 : -1 * (double)(Int16.MaxValue * volume)));
+
+        if (i % SampleRate == 0 && i != 0)
+        {
+          second++;
+        }
+
+
+        double freq = 0.0;
+        switch (second)
+        {
+          case 0:
+            freq = NoteFrequencies.E4;
+            break;
+          case 1:
+            freq = NoteFrequencies.D4;
+            break;
+          case 2:
+            freq = NoteFrequencies.C4;
+            break;
+          case 3:
+            freq = NoteFrequencies.D4;
+            break;
+          case 4:
+            freq = NoteFrequencies.E4;
+            break;
+          case 5:
+            freq = NoteFrequencies.E4;
+            break;
+          case 6:
+            freq = NoteFrequencies.E4;
+            break;
+          case 7:
+            freq = 0.0;
+            break;
+          case 8:
+            freq = NoteFrequencies.D4;
+            break;
+          case 9:
+            freq = NoteFrequencies.D4;
+            break;
+          case 10:
+            freq = NoteFrequencies.D4;
+            break;
+          default:
+            freq = NoteFrequencies.C4;
+            break;
+        }
+
+        double raw = GetConstantSample(i, freq, SampleRate);
+        double square = raw > 0 ? 1 : -1;
+        Int16 limited = (Int16) (square * (Int16.MaxValue * volume));
+
+        var bytes = BitConverter.GetBytes(limited);
         Data[0, i, 0] = bytes[0];
         Data[0, i, 1] = bytes[1];
       }
+    }
+
+    private double GetConstantSample(double time, double freq, double samplerate)
+    {
+      return Math.Sin((freq * (2 * Math.PI) * time) / samplerate);
     }
 
     public string ChunkId { get; private set; } // RIFF Header

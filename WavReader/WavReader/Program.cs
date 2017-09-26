@@ -6,7 +6,7 @@ namespace WavReader
   {
     static void Main(string[] args)
     {
-      string filePath = @"..\Wavs\sample.wav";
+      //string filePath = @"..\Wavs\sample.wav";
 
       //using (var wav = new WavFile(filePath))
       //{
@@ -14,7 +14,7 @@ namespace WavReader
       //}
 
       var wav = new WavFile();
-      wav.MakeSquareWave(.1, 16, 5, 44000);
+      wav.MakeSquareWave(.05, 16, 10, 44000);
       wav.SaveFile(@"..\Wavs\hmmm_" + DateTime.Now.Millisecond + ".wav");
 
       Console.ReadKey();
