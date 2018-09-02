@@ -1,20 +1,23 @@
 ﻿using System;
+using System.IO;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
 using Pisces.WavExplorer.Core;
-using System.Threading.Tasks;
 using Windows.Storage.Pickers;
+using Microsoft.Win32.SafeHandles;
 
 namespace Pisces.WavExplorer.UI
 {
   public sealed partial class MainPage : Page
   {
+    private WavFile _wv;
+
     public MainPage()
     {
-      this.InitializeComponent();
-
-      wavFilePicker.Click += HandleFileOpen;
+      InitializeComponent();
+      WavFilePicker.Click += HandleFileOpen;
+      LogPath.Text = NLog.LogManager.Configuration.Variables["LogPath"] + "\\diag";
     }
 
     private void HandleFileOpen(object sender, RoutedEventArgs e)
@@ -33,14 +36,16 @@ namespace Pisces.WavExplorer.UI
       picker.FileTypeFilter.Add(".wav");
 
       var file = await picker.PickSingleFileAsync();
-      LoadWavData(file.Path);
+      LoadWavData(file.CreateSafeFileHandle(FileAccess.Read));
     }
 
-    private async void LoadWavData(string filePath)
+    private async void LoadWavData(SafeFileHandle handle)
     {
-      var wv = new WavFile(filePath);
-      await wv.OpenAsync();
-      wavFileInfo.Text = wv.ToString();
+      _wv?.Dispose();
+
+      _wv = new WavFile();
+      await _wv.OpenAsync(handle);
+      WavFileInfo.Text = _wv.ToString();
     }
   }
 }

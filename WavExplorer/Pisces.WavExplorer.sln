@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pisces.WavExplorer.UI", "Pisces.WavExplorer.UI\Pisces.WavExplorer.UI.csproj", "{47496BB2-B688-4B00-B8EB-148767F25277}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pisces.WavExplorer.Core", "Pisces.WavExplorer.Core\Pisces.WavExplorer.Core.csproj", "{A5C42AB4-14C4-4A88-967E-6A5779D83BAE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pisces.WavExplorer.Core", "Pisces.WavExplorer.Core\Pisces.WavExplorer.Core.csproj", "{A5C42AB4-14C4-4A88-967E-6A5779D83BAE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,20 +41,20 @@ Global
 		{47496BB2-B688-4B00-B8EB-148767F25277}.Release|x86.Deploy.0 = Release|x86
 		{A5C42AB4-14C4-4A88-967E-6A5779D83BAE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A5C42AB4-14C4-4A88-967E-6A5779D83BAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A5C42AB4-14C4-4A88-967E-6A5779D83BAE}.Debug|ARM.ActiveCfg = Debug|ARM
-		{A5C42AB4-14C4-4A88-967E-6A5779D83BAE}.Debug|ARM.Build.0 = Debug|ARM
-		{A5C42AB4-14C4-4A88-967E-6A5779D83BAE}.Debug|x64.ActiveCfg = Debug|x64
-		{A5C42AB4-14C4-4A88-967E-6A5779D83BAE}.Debug|x64.Build.0 = Debug|x64
-		{A5C42AB4-14C4-4A88-967E-6A5779D83BAE}.Debug|x86.ActiveCfg = Debug|x86
-		{A5C42AB4-14C4-4A88-967E-6A5779D83BAE}.Debug|x86.Build.0 = Debug|x86
+		{A5C42AB4-14C4-4A88-967E-6A5779D83BAE}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{A5C42AB4-14C4-4A88-967E-6A5779D83BAE}.Debug|ARM.Build.0 = Debug|Any CPU
+		{A5C42AB4-14C4-4A88-967E-6A5779D83BAE}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A5C42AB4-14C4-4A88-967E-6A5779D83BAE}.Debug|x64.Build.0 = Debug|Any CPU
+		{A5C42AB4-14C4-4A88-967E-6A5779D83BAE}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A5C42AB4-14C4-4A88-967E-6A5779D83BAE}.Debug|x86.Build.0 = Debug|Any CPU
 		{A5C42AB4-14C4-4A88-967E-6A5779D83BAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A5C42AB4-14C4-4A88-967E-6A5779D83BAE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A5C42AB4-14C4-4A88-967E-6A5779D83BAE}.Release|ARM.ActiveCfg = Release|ARM
-		{A5C42AB4-14C4-4A88-967E-6A5779D83BAE}.Release|ARM.Build.0 = Release|ARM
-		{A5C42AB4-14C4-4A88-967E-6A5779D83BAE}.Release|x64.ActiveCfg = Release|x64
-		{A5C42AB4-14C4-4A88-967E-6A5779D83BAE}.Release|x64.Build.0 = Release|x64
-		{A5C42AB4-14C4-4A88-967E-6A5779D83BAE}.Release|x86.ActiveCfg = Release|x86
-		{A5C42AB4-14C4-4A88-967E-6A5779D83BAE}.Release|x86.Build.0 = Release|x86
+		{A5C42AB4-14C4-4A88-967E-6A5779D83BAE}.Release|ARM.ActiveCfg = Release|Any CPU
+		{A5C42AB4-14C4-4A88-967E-6A5779D83BAE}.Release|ARM.Build.0 = Release|Any CPU
+		{A5C42AB4-14C4-4A88-967E-6A5779D83BAE}.Release|x64.ActiveCfg = Release|Any CPU
+		{A5C42AB4-14C4-4A88-967E-6A5779D83BAE}.Release|x64.Build.0 = Release|Any CPU
+		{A5C42AB4-14C4-4A88-967E-6A5779D83BAE}.Release|x86.ActiveCfg = Release|Any CPU
+		{A5C42AB4-14C4-4A88-967E-6A5779D83BAE}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

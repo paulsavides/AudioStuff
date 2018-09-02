@@ -28,8 +28,19 @@ namespace Pisces.WavExplorer.UI
     /// </summary>
     public App()
     {
+      InitLogging();
       this.InitializeComponent();
       this.Suspending += OnSuspending;
+    }
+
+    /// <summary>
+    /// As UWP apps are run sandboxed need to tell NLog the root folder of this application
+    /// as the folder of the application is the only location we have free reign
+    /// </summary>
+    private static void InitLogging()
+    {
+      var sf = Windows.Storage.ApplicationData.Current.LocalFolder;
+      NLog.LogManager.Configuration.Variables["LogPath"] = sf.Path;
     }
 
     /// <summary>

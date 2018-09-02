@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Text;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using Windows.UI.ViewManagement;
+using Microsoft.Win32.SafeHandles;
+using NLog;
 
 namespace Pisces.WavExplorer.Core
 {
@@ -15,24 +15,15 @@ namespace Pisces.WavExplorer.Core
   /// <inheritdoc />
   public class WavFile : IDisposable
   {
-    private readonly string _filePath;
+    private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
     private FileStream _fstream;
 
-    public WavFile(string filePath)
+    public async Task OpenAsync(SafeFileHandle handle)
     {
-      _filePath = filePath;
-    }
-
-    public async Task OpenAsync()
-    {
-      var task = Task.Run(() => new Action(Open));
-      await task;
-    }
-
-    public void Open()
-    {
-      _fstream = File.Open(_filePath, FileMode.Open, FileAccess.Read);
-      ReadFileData();
+      Logger.Trace("opening async");
+      _fstream = new FileStream(handle, FileAccess.Read);
+      await ReadFileData();
     }
 
     public void Dispose()
@@ -40,26 +31,23 @@ namespace Pisces.WavExplorer.Core
       _fstream.Dispose();
     }
 
-    private void ReadFileData()
+    private async Task ReadFileData()
     {
-      ChunkId = ReadString();
-      ChunkSize = ReadInt32();
-      Format = ReadString();
-      Subchunk1Id = ReadString();
-      Subchunk1Size = ReadInt32();
-      AudioFormat = ReadInt16();
-      NumChannels = ReadInt16();
-      SampleRate = ReadInt32();
-      ByteRate = ReadInt32();
-      BlockAlign = ReadInt16();
-      BitsPerSample = ReadInt16();
-      Subchunk2Id = ReadString();
-      Subchunk2Size = ReadInt32();
-      NumSamples = Subchunk2Size / NumChannels / (BitsPerSample / 8);
-      ReadSamples();
-        //ReadBytes(Subchunk2Size);
-      //Channels = ReadChannels();
-
+      ChunkId       = await ReadString();
+      ChunkSize     = await ReadInt32();
+      Format        = await ReadString();
+      Subchunk1Id   = await ReadString();
+      Subchunk1Size = await ReadInt32();
+      AudioFormat   = await ReadInt16();
+      NumChannels   = await ReadInt16();
+      SampleRate    = await ReadInt32();
+      ByteRate      = await ReadInt32();
+      BlockAlign    = await ReadInt16();
+      BitsPerSample = await ReadInt16();
+      Subchunk2Id   = await ReadString();
+      Subchunk2Size = await ReadInt32();
+      NumSamples    = Subchunk2Size / NumChannels / (BitsPerSample / 8);
+      // ReadSamples();
     }
 
     public override string ToString()
@@ -78,7 +66,7 @@ namespace Pisces.WavExplorer.Core
        + "BitsPerSample : " + BitsPerSample + Environment.NewLine
        + "Subchunk2Id   : " + Subchunk2Id + Environment.NewLine
        + "Subchunk2Size : " + Subchunk2Size + Environment.NewLine
-       + "NumSamples    : " + NumSamples;// + Environment.NewLine;
+       + "NumSamples    : " + NumSamples;
 
       return res;
     }
@@ -116,7 +104,7 @@ namespace Pisces.WavExplorer.Core
     /// </summary>
     private byte[,,] Data { get; set; }
 
-    private void ReadSamples()
+    private async void ReadSamples()
     {
       Data = new byte[NumChannels, NumSamples, BitsPerSample/8];
 
@@ -130,7 +118,7 @@ namespace Pisces.WavExplorer.Core
 
       for (int i = 0; i < NumSamples; i++)
       {
-        ReadBytes(ref buffer, bytesPerSample);
+        await ReadBytes(buffer, bytesPerSample);
         for (int c = 0; c < NumChannels; c++)
         {
 
@@ -148,33 +136,33 @@ namespace Pisces.WavExplorer.Core
     /*****************************
      * FSTREAM READING UTILITIES *
      *****************************/
-    private string ReadString(int bytes = 4)
+    private async Task<string> ReadString(int bytes = 4)
     {
-      return Encoding.UTF8.GetString(ReadBytes(4));
+      return Encoding.UTF8.GetString(await ReadBytes(4));
     }
 
-    private short ReadInt16()
+    private async Task<short> ReadInt16()
     {
-      var buffer = ReadBytes(2);
+      var buffer = await ReadBytes(2);
       return BitConverter.ToInt16(buffer, 0);
     }
 
-    private int ReadInt32()
+    private async Task<int> ReadInt32()
     {
-      var buffer = ReadBytes(4);
+      var buffer = await ReadBytes(4);
       return BitConverter.ToInt32(buffer, 0);
     }
 
-    private byte[] ReadBytes(int count)
+    private async Task<byte[]> ReadBytes(int count)
     {
       byte[] buffer = new byte[count];
-      _fstream.Read(buffer, 0, count);
+      await _fstream.ReadAsync(buffer, 0, count);
       return buffer;
     }
 
-    private void ReadBytes(ref byte[] buffer, int count)
+    private async Task ReadBytes(byte[] buffer, int count)
     {
-      _fstream.Read(buffer, 0, count);
+      await _fstream.ReadAsync(buffer, 0, count);
     }
   }
 }

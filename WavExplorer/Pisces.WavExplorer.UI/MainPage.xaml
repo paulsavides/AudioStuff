@@ -7,9 +7,9 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-  <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-    <Button x:Name="wavFilePicker" Content="Select WAV" HorizontalAlignment="Left" Margin="10,9,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.479,0.493" Width="339"/>
-    <TextBox x:Name="wavFileInfo" HorizontalAlignment="Left" Margin="10,47,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="577" Width="339" IsEnabled="False" IsReadOnly="True" PlaceholderText="Will display wav metadata once you've entered some."/>
-
-  </Grid>
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Button x:Name="WavFilePicker" Content="Select WAV" HorizontalAlignment="Left" Margin="10,9,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.479,0.493" Width="339"/>
+        <TextBox x:Name="WavFileInfo" HorizontalAlignment="Left" Margin="10,47,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="577" Width="339" IsEnabled="False" IsReadOnly="True" PlaceholderText="Will display wav metadata once you've entered some."/>
+        <TextBox x:Name="LogPath" HorizontalAlignment="Left" Margin="376,10,0,0" Text="TextBox" VerticalAlignment="Top" Height="31" Width="679" IsReadOnly="True" IsEnabled="False"/>
+    </Grid>
 </Page>
